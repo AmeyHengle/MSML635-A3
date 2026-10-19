@@ -1,0 +1,75 @@
+
+Running 20 experiments of 10000 episodes
+========================================
+ Run     Ordinary IS     Weighted IS
+------------------------------------
+   1        1.993600        2.000000
+   2        1.962400        2.000000
+   3        2.008000        2.000000
+   4        2.064000        2.000000
+   5        1.981600        2.000000
+   6        2.012000        2.000000
+   7        1.992800        2.000000
+   8        2.018400        2.000000
+   9        2.000800        2.000000
+  10        2.008800        2.000000
+  11        2.014400        2.000000
+  12        2.098400        2.000000
+  13        1.965600        2.000000
+  14        2.016800        2.000000
+  15        2.063200        2.000000
+  16        1.977600        2.000000
+  17        1.996800        2.000000
+  18        1.961600        2.000000
+  19        2.006400        2.000000
+  20        2.000000        2.000000
+
+Results over all experiments
+============================
+Ordinary importance sampling
+  Mean                  = 2.007160
+  Standard deviation    = 0.034730
+  Deviation from truth  = +0.007160
+
+Weighted importance sampling
+  Mean                  = 2.000000
+  Standard deviation    = 0.000000
+  Deviation from truth  = +0.000000
+
+Check against theory
+====================
+Var(rho * G) for one episode          = 12.0000
+Predicted std of ordinary IS estimate = 0.034641
+Measured std of ordinary IS estimate  = 0.034730
+Weighted IS is exactly 2 on every run because every episode that survives the
+ratio has rho = 4 and G = 2, so the ratio of the two sums cannot vary.
+
+Why the correction is needed
+============================
+Value of A under the behavior policy b : 1.0000
+Value of A under the target policy pi  : 2.0000
+Averaging the raw returns would converge to the first number, not the second.
+Drawing the required figures ...
+Comparing the uncorrected average against both estimators ...
+Checking trajectory frequencies against the policies ...
+Measuring the distribution of the importance ratio ...
+Sweeping the episode count to check the spread against theory ...
+Building the sampling distribution of the ordinary estimator ...
+Measuring bias at small sample sizes ...
+Tracking convergence across many independent runs ...
+Running the extensions: ratio growth and weighted estimator bias ...
+
+Figures written
+===============
+  figures/estimates_per_experiment.png
+  figures/convergence.png
+  figures/estimate_spread.png
+  figures/naive_vs_corrected.png
+  figures/trajectory_distributions.png
+  figures/ratio_distribution.png
+  figures/variance_scaling.png
+  figures/sampling_distribution.png
+  figures/bias_vs_episodes.png
+  figures/convergence_envelope.png
+  figures/ratio_explosion.png
+  figures/soft_target_bias.png
