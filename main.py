@@ -154,6 +154,57 @@ def figurePath(arguments, fileName):
     return os.path.join(arguments.figuresDirectory, fileName)
 
 
+
+def printScalingTable(scalingResults):
+    """
+    I print the variance scaling sweep as a table so that the numbers behind the figure appear in
+    my saved console output. Every figure in my report should have its numbers traceable to the
+    program's own output rather than read off a picture.
+    """
+    print(f"  {'Episodes':>9}  {'Measured std':>13}  {'sqrt(12/N)':>12}  {'Ratio':>7}")
+    for row in scalingResults:
+        ratio = row["ordinaryStd"] / row["predictedStd"]
+        print(f"  {row['episodes']:>9}  {row['ordinaryStd']:>13.6f}  "
+              f"{row['predictedStd']:>12.6f}  {ratio:>7.3f}")
+
+
+def printBiasTable(biasResults):
+    """
+    I print the small sample bias study, which is the evidence behind my answer on unbiasedness.
+    The weighted column climbing from about 0.5 towards 2 while the ordinary column stays flat is
+    the whole result, and it is easier to quote from a table than to read off the figure.
+    """
+    print(f"  {'Episodes':>9}  {'Ordinary mean':>14}  {'Weighted mean':>14}")
+    for row in biasResults:
+        print(f"  {row['episodes']:>9}  {row['ordinaryMean']:>14.4f}  {row['weightedMean']:>14.4f}")
+
+
+def printChainTable(chainResults):
+    """
+    I print the chain length study next to its analytical prediction. The measured variance should
+    track four times two to the chain length minus four, and at length two it should reproduce the
+    variance of 12 that I derived for the assignment's own MDP.
+    """
+    print(f"  {'Length':>7}  {'rho':>9}  {'Survival':>10}  {'Var theory':>12}  {'Var measured':>13}")
+    for row in chainResults:
+        print(f"  {row['chainLength']:>7}  {row['survivingRatio']:>9.0f}  "
+              f"{row['measuredSurvivalRate']:>10.5f}  {row['variance']:>12.1f}  "
+              f"{row['measuredVariance']:>13.1f}")
+
+
+def printSoftTargetTable(softTargetResults):
+    """
+    I print the softened target policy study, which is the only place the weighted estimator's
+    general bias is visible. I include the standard error so that the bias can be judged against
+    the precision of my measurement rather than taken on trust.
+    """
+    print(f"  {'pi(Left)':>9}  {'True value':>11}  {'Ord bias':>10}  {'Wtd bias':>10}  {'Wtd se':>8}")
+    for row in softTargetResults:
+        print(f"  {row['leftProbability']:>9.2f}  {row['trueValue']:>11.3f}  "
+              f"{row['ordinaryBias']:>+10.4f}  {row['weightedBias']:>+10.4f}  "
+              f"{row['weightedStandardError']:>8.4f}")
+
+
 def writeRequiredFigures(arguments, ordinaryEstimates, weightedEstimates):
     """
     I write the figures that Part 7 actually asks for, plus the box plot and the single run
@@ -194,13 +245,16 @@ def writeSupportingFigures(arguments):
 
     print("Measuring the distribution of the importance ratio ...")
     importanceRatios, effectiveSampleSize = collectImportanceRatios(arguments.episodes)
+    print(f"  effective sample size = {effectiveSampleSize:.0f} of {len(importanceRatios)} episodes "
+          f"({effectiveSampleSize / len(importanceRatios):.1%})")
     writtenFigures.append(plotRatioDistribution(
         importanceRatios, effectiveSampleSize, figurePath(arguments, "ratio_distribution.png")))
 
     print("Sweeping the episode count to check the spread against theory ...")
+    scalingResults = runVarianceScalingStudy(SCALING_EPISODE_COUNTS, SCALING_REPETITIONS)
+    printScalingTable(scalingResults)
     writtenFigures.append(plotVarianceScaling(
-        runVarianceScalingStudy(SCALING_EPISODE_COUNTS, SCALING_REPETITIONS),
-        figurePath(arguments, "variance_scaling.png")))
+        scalingResults, figurePath(arguments, "variance_scaling.png")))
 
     print("Building the sampling distribution of the ordinary estimator ...")
     writtenFigures.append(plotSamplingDistribution(
@@ -208,9 +262,10 @@ def writeSupportingFigures(arguments):
         figurePath(arguments, "sampling_distribution.png")))
 
     print("Measuring bias at small sample sizes ...")
+    biasResults = runBiasStudy(BIAS_EPISODE_COUNTS, 4000)
+    printBiasTable(biasResults)
     writtenFigures.append(plotBiasVersusEpisodes(
-        runBiasStudy(BIAS_EPISODE_COUNTS, 4000),
-        figurePath(arguments, "bias_vs_episodes.png")))
+        biasResults, figurePath(arguments, "bias_vs_episodes.png")))
 
     print("Tracking convergence across many independent runs ...")
     checkpoints, ordinarySummary, weightedSummary = runConvergenceEnvelope(200, arguments.episodes)
@@ -235,6 +290,8 @@ def writeExtensionFigures(arguments):
     behaviorResults = runBehaviorProbabilitySweep(BEHAVIOR_LEFT_PROBABILITIES, 50000)
     softTargetResults = runSoftTargetBiasStudy(
         SOFT_TARGET_LEFT_PROBABILITIES, SOFT_TARGET_EPISODE_COUNT, 20000)
+    printChainTable(chainResults)
+    printSoftTargetTable(softTargetResults)
 
     return [
         plotRatioExplosion(chainResults, behaviorResults,

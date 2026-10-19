@@ -53,11 +53,46 @@ Drawing the required figures ...
 Comparing the uncorrected average against both estimators ...
 Checking trajectory frequencies against the policies ...
 Measuring the distribution of the importance ratio ...
+  effective sample size = 2493 of 10000 episodes (24.9%)
 Sweeping the episode count to check the spread against theory ...
+   Episodes   Measured std    sqrt(12/N)    Ratio
+         10       1.082324      1.095445    0.988
+        100       0.362404      0.346410    1.046
+       1000       0.115891      0.109545    1.058
+      10000       0.039289      0.034641    1.134
+     100000       0.010377      0.010954    0.947
 Building the sampling distribution of the ordinary estimator ...
 Measuring bias at small sample sizes ...
+   Episodes   Ordinary mean   Weighted mean
+          1          1.9540          0.4885
+          2          1.9340          0.8445
+          3          1.9773          1.1440
+          5          2.0084          1.5380
+         10          2.0388          1.8835
+         20          2.0009          1.9945
+         50          2.0083          2.0000
+        100          2.0059          2.0000
 Tracking convergence across many independent runs ...
 Running the extensions: ratio growth and weighted estimator bias ...
+   Length        rho    Survival    Var theory   Var measured
+        1          2     0.49813           4.0            4.0
+        2          4     0.24977          12.0           12.0
+        3          8     0.12447          28.0           27.9
+        4         16     0.06252          60.0           60.0
+        5         32     0.03171         124.0          125.8
+        6         64     0.01491         252.0          240.6
+        7        128     0.00770         508.0          500.7
+        8        256     0.00382        1020.0          997.6
+        9        512     0.00211        2044.0         2207.8
+       10       1024     0.00107        4092.0         4483.1
+   pi(Left)   True value    Ord bias    Wtd bias    Wtd se
+       1.00        2.000     +0.0036     -0.1108    0.0032
+       0.95        1.855     +0.0008     -0.1042    0.0023
+       0.90        1.720     +0.0014     -0.0983    0.0022
+       0.80        1.480     -0.0056     -0.0770    0.0022
+       0.70        1.280     +0.0072     -0.0382    0.0021
+       0.60        1.120     -0.0007     -0.0160    0.0018
+       0.50        1.000     -0.0004     -0.0004    0.0016
 
 Figures written
 ===============
